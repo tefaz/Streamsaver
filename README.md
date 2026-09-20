@@ -2,6 +2,8 @@
 
 A native Qt desktop app for downloading the main video at a URL as an MP4 at a chosen quality, or extracting it as a high-quality MP3. Site support is provided by `yt-dlp`; FFmpeg handles merging and conversion.
 
+![StreamSaver desktop app](Streamsaver_screenshot1.png)
+
 ## Install on CachyOS / Arch
 
 ```bash
