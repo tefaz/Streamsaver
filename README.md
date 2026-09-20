@@ -18,7 +18,7 @@ Launch **StreamSaver** from Plasma's application launcher, or run `./streamsaver
 
 - Open **History** to see successful downloads, newest first, with their titles, URLs, and cached thumbnails when available. History is saved locally between sessions. **Clear history** removes these records and thumbnails without deleting downloaded files. Downloads made before this feature was added are not included.
 - StreamSaver intentionally downloads only the main video, not playlists.
-- Available resolutions are detected per video. “Best” uses the highest available quality.
+- Available resolutions are detected per video.
 - Downloaded filenames are cleaned of common presentation labels such as `[HD]`, `(Lyrics)`, `Official Video`, and resolution tags. Meaningful qualifiers such as live versions and remaster information are preserved.
 - Some sites require authentication, DRM, or actively block download tools. DRM-protected media cannot be downloaded by this app.
 - Only download media you are legally allowed to save, and respect each site's terms.
