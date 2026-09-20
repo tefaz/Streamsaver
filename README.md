@@ -4,6 +4,10 @@ A native Qt desktop app for downloading the main video at a URL as an MP4 at a c
 
 ![StreamSaver desktop app](Streamsaver_screenshot1.png)
 
+## Downloads
+
+Download the latest `.deb` (Debian/Ubuntu) or `.AppImage` (x86_64 Linux) from the [Releases page](https://github.com/tefaz/Streamsaver/releases). The Debian package installs its required `PyQt6`, `yt-dlp`, and FFmpeg dependencies through your package manager. Make the AppImage executable before launching it.
+
 ## Install on CachyOS / Arch
 
 ```bash

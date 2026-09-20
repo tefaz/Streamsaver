@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=StreamSaver
+Comment=Download online videos as MP4 or MP3
+Exec=streamsaver
+Icon=streamsaver
+Terminal=false
+Categories=AudioVideo;Network;
+Keywords=video;audio;download;mp3;mp4;
+StartupNotify=true
