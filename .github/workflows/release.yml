@@ -48,10 +48,13 @@ jobs:
           EOF
           dpkg-deb --build --root-owner-group package "streamsaver_${version}_all.deb"
 
-      - name: Build AppImage
+      - name: Build portable executable
         run: |
           python3 -m PyInstaller --noconfirm --clean --onefile --name StreamSaver \
             --collect-all PyQt6 main.py
+
+      - name: Assemble AppImage directory
+        run: |
           mkdir -p AppDir/usr/bin AppDir/usr/share/applications \
             AppDir/usr/share/icons/hicolor/scalable/apps
           install -m 755 dist/StreamSaver AppDir/usr/bin/StreamSaver
@@ -74,6 +77,9 @@ jobs:
           exec "$HERE/usr/bin/StreamSaver" "$@"
           EOF
           chmod 755 AppDir/AppRun
+
+      - name: Package AppImage
+        run: |
           curl -fL --retry 3 \
             https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage \
             -o appimagetool.AppImage
