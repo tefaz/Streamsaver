@@ -146,7 +146,7 @@ class HistoryEntry(QFrame):
     def __init__(self, url: str):
         super().__init__()
         self.url = url
-        self.setObjectName("card")
+        self.setObjectName("historyEntry")
         self.setCursor(Qt.CursorShape.PointingHandCursor)
 
     def mouseReleaseEvent(self, event):
@@ -411,6 +411,8 @@ class MainWindow(QMainWindow):
         contents = QWidget()
         contents.setObjectName("historyContents")
         self.history_layout = QVBoxLayout(contents)
+        self.history_layout.setContentsMargins(0, 0, 0, 0)
+        self.history_layout.setSpacing(1)
         self.history_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
         self.history_scroll.setWidget(contents)
         layout.addWidget(self.history_scroll)
@@ -436,8 +438,10 @@ class MainWindow(QMainWindow):
             empty.setMinimumHeight(80)
             self.history_layout.addWidget(empty)
         for entry in self.history:
-            card = HistoryEntry(entry["url"])
-            layout = QVBoxLayout(card)
+            row = HistoryEntry(entry["url"])
+            layout = QHBoxLayout(row)
+            layout.setContentsMargins(10, 10, 8, 10)
+            layout.setSpacing(10)
             pixmap = QPixmap()
             try:
                 pixmap.loadFromData(base64.b64decode(entry["image"]))
@@ -445,23 +449,35 @@ class MainWindow(QMainWindow):
                 pass
             if not pixmap.isNull():
                 thumbnail = QLabel()
-                thumbnail.setPixmap(pixmap.scaled(220, 124, Qt.AspectRatioMode.KeepAspectRatio,
+                thumbnail.setObjectName("historyThumbnail")
+                thumbnail.setPixmap(pixmap.scaled(72, 52, Qt.AspectRatioMode.KeepAspectRatio,
                                                   Qt.TransformationMode.SmoothTransformation))
-                thumbnail.installEventFilter(card)
+                thumbnail.installEventFilter(row)
                 layout.addWidget(thumbnail)
+            details = QVBoxLayout()
+            details.setSpacing(5)
             title = QLabel(entry["title"])
             title.setObjectName("historyTitle")
             title.setTextFormat(Qt.TextFormat.PlainText)
             title.setWordWrap(True)
-            title.installEventFilter(card)
-            layout.addWidget(title)
+            title.installEventFilter(row)
+            details.addWidget(title)
             copy_url = QPushButton("Copy URL")
             copy_url.setObjectName("historyUrl")
             copy_url.setToolTip(entry["url"])
             copy_url.setCursor(Qt.CursorShape.PointingHandCursor)
             copy_url.clicked.connect(lambda checked=False, url=entry["url"]: self._copy_history_url(url))
-            layout.addWidget(copy_url)
-            self.history_layout.addWidget(card)
+            details.addWidget(copy_url, alignment=Qt.AlignmentFlag.AlignLeft)
+            layout.addLayout(details, 1)
+            delete = QPushButton("×")
+            delete.setObjectName("historyDelete")
+            delete.setToolTip("Remove this history entry")
+            delete.setAccessibleName("Remove history entry")
+            delete.setFixedSize(28, 28)
+            delete.setCursor(Qt.CursorShape.PointingHandCursor)
+            delete.clicked.connect(lambda checked=False, entry=entry: self._delete_history_entry(entry))
+            layout.addWidget(delete, alignment=Qt.AlignmentFlag.AlignTop)
+            self.history_layout.addWidget(row)
         self.history_scroll.verticalScrollBar().setValue(0)
         QTimer.singleShot(0, lambda: self.history_scroll.verticalScrollBar().setValue(0))
 
@@ -479,6 +495,14 @@ class MainWindow(QMainWindow):
         self.history.clear()
         if not self._save_history():
             self._set_status("Could not clear saved history. Check your settings folder permissions.", "error")
+
+    def _delete_history_entry(self, target):
+        for index, entry in enumerate(self.history):
+            if entry is target:
+                del self.history[index]
+                if not self._save_history():
+                    self._set_status("Could not save updated history. Check your settings folder permissions.", "error")
+                return
 
     def _record_download(self):
         info = self.download_info
@@ -524,9 +548,14 @@ class MainWindow(QMainWindow):
         QWidget#historyPanel, QScrollArea#historyScroll, QScrollArea#historyScroll > QWidget > QWidget, QWidget#historyContents { background: #0b1020; }
         QScrollArea#historyScroll { border: none; }
         QLabel#historyEmpty { color: #8591a6; padding: 8px; }
+        QFrame#historyEntry { background: #101724; border: none; border-bottom: 1px solid #273249; border-radius: 0; }
+        QFrame#historyEntry:hover { background: #162033; }
+        QLabel#historyThumbnail { background: #0b111d; border: 1px solid #2b374b; border-radius: 5px; }
         QLabel#historyTitle { color: #f2f6fc; font-weight: 700; }
         QPushButton#historyUrl { color: #9ecdbc; background: #101e28; border-color: #28594d; font-size: 11px; padding: 7px 9px; }
         QPushButton#historyUrl:hover { color: #d2f7e9; background: #15312e; border-color: #3f8d7b; }
+        QPushButton#historyDelete { color: #93a0b3; background: transparent; border: none; border-radius: 6px; padding: 0; font-size: 20px; font-weight: 400; }
+        QPushButton#historyDelete:hover { color: #ffb1bc; background: #3b1e2a; }
         QScrollArea#pageScroll, QScrollArea#pageScroll > QWidget > QWidget { background: #090c14; }
         QWidget#root { background: transparent; }
         QLabel#brand { color: #f6fbff; font-weight: 800; letter-spacing: 2px; font-size: 13px; }

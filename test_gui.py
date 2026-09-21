@@ -92,6 +92,25 @@ class GuiTests(unittest.TestCase):
             self.assertEqual(QApplication.clipboard().text(), url)
             window.close()
 
+    def test_history_entry_can_be_deleted_individually(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            settings = QSettings(str(Path(tmp) / "settings.ini"), QSettings.Format.IniFormat)
+            window = MainWindow(settings)
+            first = {"title": "First", "url": "https://example.com/first", "thumbnail": "", "image": ""}
+            second = {"title": "Second", "url": "https://example.com/second", "thumbnail": "", "image": ""}
+            window.history = [first, second]
+            window._save_history()
+            delete_button = next(button for button in window.findChildren(QPushButton)
+                                 if button.objectName() == "historyDelete")
+            with patch("main.QDesktopServices.openUrl") as open_url:
+                delete_button.click()
+            self.assertEqual(window.history, [second])
+            self.assertFalse(open_url.called)
+            reopened = MainWindow(QSettings(str(Path(tmp) / "settings.ini"), QSettings.Format.IniFormat))
+            self.assertEqual(reopened.history, [second])
+            window.close()
+            reopened.close()
+
     def test_clicking_a_history_entry_opens_its_url(self):
         with tempfile.TemporaryDirectory() as tmp:
             settings = QSettings(str(Path(tmp) / "settings.ini"), QSettings.Format.IniFormat)
