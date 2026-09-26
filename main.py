@@ -310,7 +310,7 @@ class MainWindow(QMainWindow):
         for choice in (self.mp4, self.mp3):
             choice.setObjectName("formatChoice")
             choice.setCursor(Qt.CursorShape.PointingHandCursor)
-        self.mp4.setChecked(True)
+        self.mp3.setChecked(True)
         self.types = QButtonGroup(self)
         self.types.addButton(self.mp4)
         self.types.addButton(self.mp3)
@@ -334,6 +334,7 @@ class MainWindow(QMainWindow):
         self.quality_area.setWidget(self.quality_box)
         self.qualities = QButtonGroup(self)
         self._set_qualities(())
+        self._show_qualities(self.mp4.isChecked())
         card.addWidget(self.quality_area)
         outer.addWidget(self.card)
 
@@ -348,15 +349,21 @@ class MainWindow(QMainWindow):
         self.folder = QLabel(str(self.destination))
         self.folder.setObjectName("folder")
         self.folder.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse)
-        folder_text.addWidget(self.folder)
         self.choose = QPushButton("Choose folder")
+        self.choose.setObjectName("chooseFolder")
+        self.choose.setCursor(Qt.CursorShape.PointingHandCursor)
         self.choose.clicked.connect(self.choose_folder)
+        folder_details = QHBoxLayout()
+        folder_details.setSpacing(8)
+        folder_details.addWidget(self.folder)
+        folder_details.addWidget(self.choose)
+        folder_details.addStretch()
+        folder_text.addLayout(folder_details)
         open_btn = QPushButton("Open")
         open_btn.setObjectName("quiet")
         open_btn.clicked.connect(lambda: QDesktopServices.openUrl(QUrl.fromLocalFile(str(self.destination))))
         folder_row.addLayout(folder_text, 1)
         folder_row.addWidget(open_btn)
-        folder_row.addWidget(self.choose)
         outer.addWidget(destination)
 
         self.progress = QProgressBar()
@@ -421,7 +428,7 @@ class MainWindow(QMainWindow):
         self.resizeDocks([self.history_dock], [290], Qt.Orientation.Horizontal)
         self.history_toggle.toggled.connect(self.history_dock.setVisible)
         self.history_dock.visibilityChanged.connect(self.history_toggle.setChecked)
-        self.history_toggle.setChecked(True)
+        self.history_dock.hide()
         self._render_history()
 
     def _render_history(self):
@@ -587,6 +594,11 @@ class MainWindow(QMainWindow):
         QPushButton:disabled { color: #5f6b7e; background: #161d2a; border-color: #252e3e; }
         QPushButton#quiet { color: #abb6c8; background: transparent; }
         QPushButton#quiet:hover { color: #eef5ff; background: #202a3a; }
+        QPushButton#chooseFolder { color: #8591a6; background: transparent; border: 1px solid transparent; border-radius: 5px; min-height: 16px; padding: 3px 6px; font-size: 11px; font-weight: 400; }
+        QPushButton#chooseFolder:hover { color: #d4dbea; background: #202a3a; }
+        QPushButton#chooseFolder:focus { border-color: #50617c; }
+        QPushButton#chooseFolder:pressed { background: #182131; }
+        QPushButton#chooseFolder:disabled { color: #5f6b7e; background: transparent; }
         QPushButton#primary, QPushButton#downloadButton { color: #061916; background: #59e1c3; border: 1px solid #74eed4; font-weight: 800; }
         QPushButton#primary:hover, QPushButton#downloadButton:hover { background: #78edd4; border-color: #9af5e1; }
         QPushButton#primary:pressed, QPushButton#downloadButton:pressed { background: #43c8ab; }
