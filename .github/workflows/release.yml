@@ -65,11 +65,14 @@ jobs:
           curl -fL --retry 3 https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp \
             -o AppDir/usr/bin/yt-dlp
           chmod 755 AppDir/usr/bin/yt-dlp
-          curl -fL --retry 3 https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-amd64-static.tar.xz \
+          curl -fL --retry 3 \
+            https://github.com/yt-dlp/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-linux64-gpl.tar.xz \
             -o ffmpeg.tar.xz
-          tar -xJf ffmpeg.tar.xz --wildcards --strip-components=1 -C AppDir/usr/bin \
-            '*/ffmpeg' '*/ffprobe'
+          tar -xJf ffmpeg.tar.xz --wildcards --strip-components=2 -C AppDir/usr/bin \
+            '*/bin/ffmpeg' '*/bin/ffprobe'
           chmod 755 AppDir/usr/bin/ffmpeg AppDir/usr/bin/ffprobe
+          AppDir/usr/bin/ffmpeg -version
+          AppDir/usr/bin/ffprobe -version
           cat > AppDir/AppRun <<'EOF'
           #!/usr/bin/env sh
           HERE="$(dirname "$(readlink -f "$0")")"
